@@ -1,0 +1,69 @@
+-- Скрипты для актуализации структуры основных таблиц проекта
+
+-- Таблица users
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS role VARCHAR(20) NOT NULL DEFAULT 'user',
+  ALTER COLUMN name SET NOT NULL,
+  ALTER COLUMN email SET NOT NULL,
+  ALTER COLUMN password SET NOT NULL,
+  ALTER COLUMN is_active SET DEFAULT TRUE;
+
+-- Таблица products
+ALTER TABLE products
+  ADD COLUMN IF NOT EXISTS sku VARCHAR(100),
+  ADD COLUMN IF NOT EXISTS category VARCHAR(100),
+  ADD COLUMN IF NOT EXISTS quantity INTEGER DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS price NUMERIC(10,2) DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS location VARCHAR(100),
+  ADD COLUMN IF NOT EXISTS status VARCHAR(50),
+  ADD COLUMN IF NOT EXISTS description TEXT,
+  ADD COLUMN IF NOT EXISTS supplier VARCHAR(255),
+  ADD COLUMN IF NOT EXISTS barcode VARCHAR(255);
+
+-- Таблица categories
+ALTER TABLE categories
+  ALTER COLUMN name SET NOT NULL;
+
+-- Таблица orders
+ALTER TABLE orders
+  ADD COLUMN IF NOT EXISTS number VARCHAR(100),
+  ADD COLUMN IF NOT EXISTS customer VARCHAR(255),
+  ADD COLUMN IF NOT EXISTS status VARCHAR(50),
+  ADD COLUMN IF NOT EXISTS date TIMESTAMP,
+  ADD COLUMN IF NOT EXISTS items INTEGER,
+  ADD COLUMN IF NOT EXISTS total NUMERIC(10,2),
+  ADD COLUMN IF NOT EXISTS pickup VARCHAR(255);
+
+-- Таблица order_items
+ALTER TABLE order_items
+  ADD COLUMN IF NOT EXISTS order_id INTEGER,
+  ADD COLUMN IF NOT EXISTS product_id INTEGER,
+  ADD COLUMN IF NOT EXISTS quantity INTEGER,
+  ADD COLUMN IF NOT EXISTS price NUMERIC(10,2);
+
+-- Таблица order_history
+ALTER TABLE order_history
+  ADD COLUMN IF NOT EXISTS order_id INTEGER,
+  ADD COLUMN IF NOT EXISTS date TIMESTAMP,
+  ADD COLUMN IF NOT EXISTS status VARCHAR(50),
+  ADD COLUMN IF NOT EXISTS comment TEXT;
+
+-- Таблица inventory_movements
+ALTER TABLE inventory_movements
+  ADD COLUMN IF NOT EXISTS product_id INTEGER,
+  ADD COLUMN IF NOT EXISTS quantity INTEGER,
+  ADD COLUMN IF NOT EXISTS movement_type VARCHAR(50),
+  ADD COLUMN IF NOT EXISTS date TIMESTAMP;
+
+-- Таблица sales_report
+ALTER TABLE sales_report
+  ADD COLUMN IF NOT EXISTS date DATE,
+  ADD COLUMN IF NOT EXISTS orders INTEGER,
+  ADD COLUMN IF NOT EXISTS revenue NUMERIC(12,2);
+
+-- Таблица inventory_report
+ALTER TABLE inventory_report
+  ADD COLUMN IF NOT EXISTS category VARCHAR(100),
+  ADD COLUMN IF NOT EXISTS count INTEGER;
+
+-- Добавьте дополнительные изменения по необходимости
