@@ -2,8 +2,7 @@ import axios from 'axios'
 
 // Базовая конфигурация axios
 const api = axios.create({
-  // В реальном приложении здесь будет URL вашего бэкенда
-  baseURL: 'http://localhost:4000/api',
+  baseURL: 'http://localhost:4000/api', // Вернул /api для корректной работы с backend
   headers: {
     'Content-Type': 'application/json',
   },

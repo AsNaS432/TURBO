@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { 
@@ -12,40 +13,47 @@ import {
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const { user, hasRole } = useAuth()
+  const [showHeader, setShowHeader] = useState(true)
+  const [isHovered, setIsHovered] = useState(false)
   
   // Создаем класс для активных ссылок
   const activeLink = "flex items-center px-4 py-2 mt-2 text-white bg-primary-700 rounded-md"
   const inactiveLink = "flex items-center px-4 py-2 mt-2 text-neutral-600 transition-colors duration-200 rounded-md hover:bg-neutral-100"
   
+  const toggleHeader = () => {
+    setShowHeader(!showHeader)
+  }
+  
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+  }
+  
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+  }
+  
   return (
     <>
       {/* Мобильное затемнение */}
-      {isOpen && (
+      {(isHovered || isOpen) && (
         <div 
           className="fixed inset-0 z-20 bg-black bg-opacity-50 md:hidden"
-          onClick={toggleSidebar}
+          onClick={toggleSidebar || handleMouseLeave}
         ></div>
       )}
-      
       {/* Боковое меню */}
       <aside 
-        className={`fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto bg-white shadow-md transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        className={`fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto bg-white shadow-md transform transition-transform duration-300 ease-in-out
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:translate-x-0 md:static md:block`}
       >
-        <div className="flex items-center justify-between px-4 py-5">
-          <div className="flex items-center">
-            <span className="text-xl font-bold text-primary-600">
-              Склад Турбо
-            </span>
-          </div>
-          <button
-            onClick={toggleSidebar}
-            className="p-1 -mr-1 rounded-md md:hidden focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <FiX className="w-6 h-6" />
-          </button>
-        </div>
+        {/* <div className="px-4 py-6 border-b border-neutral-200">
+          <span className="block text-2xl font-extrabold text-primary-600 tracking-tight">
+            Склад Турбо
+          </span>
+        </div> */}
         
         <nav className="mt-5 px-4">
           <NavLink 

@@ -58,9 +58,8 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Неверный email или пароль' });
     }
 
-    const user = userResult.rows[0];
-    // Временное сравнение паролей без хеширования (НЕБЕЗОПАСНО)
-    const passwordMatch = password.trim() === user.password.trim();
+    const user = userResult.rows[0];    // Сравнение пароля с использованием bcrypt
+    const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res.status(401).json({ error: 'Неверный email или пароль' });
     }
