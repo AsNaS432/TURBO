@@ -105,6 +105,28 @@ export function AuthProvider({ children }) {
     return roles.includes(user.role)
   }
   
+  // Функция для обновления профиля пользователя
+  const updateUserProfile = async (profileData) => {
+    try {
+      const response = await api.put('/users/profile', profileData)
+      setUser(response.data)
+      toast.success('Профиль успешно обновлен')
+      return true
+    } catch (error) {
+      console.error('Ошибка обновления профиля:', error)
+      toast.error(error.response?.data?.error || 'Не удалось обновить профиль')
+      return false
+    }
+  }
+
+  // Обновляем user с учетом phone, если он есть в response.data
+  const updateUserWithPhone = (userData) => {
+    setUser(prevUser => ({
+      ...prevUser,
+      phone: userData.phone || prevUser?.phone || ''
+    }))
+  }
+
   const value = {
     user,
     isAuthenticated,
@@ -113,7 +135,9 @@ export function AuthProvider({ children }) {
     login,
     register,
     logout,
-    hasRole
+    hasRole,
+    updateUserProfile,
+    updateUserWithPhone
   }
   
   return (

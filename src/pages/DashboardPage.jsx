@@ -35,29 +35,61 @@ const DashboardPage = () => {
   const [stats, setStats] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   
+  // Добавлена проверка структуры данных перед использованием
+  const validateStats = (data) => {
+    return (
+      data &&
+      typeof data.totalInventory === 'number' &&
+      typeof data.lowStockItems === 'number' &&
+      typeof data.pendingOrders === 'number' &&
+      typeof data.completedOrders === 'number'
+    );
+  };
+
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await api.get('/dashboard/stats')
-        setStats(response.data)
-        setIsLoading(false)
+        const response = await api.get('/dashboard/stats');
+        console.log('Ответ API:', response.data); // Логирование ответа API
+
+        // Приведение числовых полей к числам
+        const parsedData = {
+          ...response.data,
+          totalInventory: Number(response.data.totalInventory),
+          lowStockItems: Number(response.data.lowStockItems),
+          pendingOrders: Number(response.data.pendingOrders),
+          completedOrders: Number(response.data.completedOrders),
+        };
+
+        const validData = validateStats(parsedData);
+        setStats(
+          validData
+            ? parsedData
+            : {
+                totalInventory: 0,
+                lowStockItems: 0,
+                pendingOrders: 0,
+                completedOrders: 0,
+              }
+        );
+        setIsLoading(false);
       } catch (error) {
-        console.error('Ошибка загрузки данных дашборда:', error)
+        console.error('Ошибка загрузки данных дашборда:', error);
         setStats({
           totalInventory: 0,
           lowStockItems: 0,
           pendingOrders: 0,
           completedOrders: 0,
-          recentActivity: [],
-          inventoryByCategory: [],
-          ordersByStatus: [],
-          salesData: []
-        })
-        setIsLoading(false)
+        });
+        setIsLoading(false);
       }
-    }
-    
-    fetchDashboardData()
+    };
+
+    fetchDashboardData();
+
+    const interval = setInterval(fetchDashboardData, 10000); // Обновление каждые 10 секунд
+
+    return () => clearInterval(interval);
   }, [])
   
   const COLORS = ['#2563eb', '#14b8a6', '#f97316', '#ef4444', '#a855f7', '#737373']
@@ -70,6 +102,11 @@ const DashboardPage = () => {
     )
   }
   
+  // Добавлена проверка на наличие данных перед использованием map
+  if (!stats || !Array.isArray(stats.recentActivity)) {
+    return <p>Данные недоступны</p>;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">

@@ -58,10 +58,8 @@ const AddInventoryItemPage = () => {
     setIsLoading(true)
     
     try {
-      // В реальном приложении здесь будет запрос к API
-      // const response = await api.post('/inventory', formData)
-      
-      toast.success('Товар успешно добавлен')
+      const response = await api.post('/inventory', formData)
+      toast.success(`Товар успешно добавлен: ${response.data.name}`)
       navigate('/inventory')
     } catch (error) {
       console.error('Ошибка добавления товара:', error)

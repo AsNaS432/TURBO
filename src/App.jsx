@@ -16,6 +16,7 @@ import ReportsPage from './pages/reports/ReportsPage'
 import ProfilePage from './pages/ProfilePage'
 import NotFoundPage from './pages/NotFoundPage'
 import GuestPage from './pages/GuestPage'
+import MainPage from './pages/MainPage'
 
 // Защищенный маршрут для пользователей с определенной ролью
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -58,6 +59,7 @@ function App() {
   return (
     <Routes>
       {/* Публичные маршруты */}
+      <Route path="/" element={<MainPage />} />
       <Route path="/guest" element={<GuestPage />} />
       <Route path="/login" element={
         <PublicRoute>

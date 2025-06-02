@@ -25,6 +25,7 @@ const OrdersPage = () => {
     const fetchOrders = async () => {
       try {
         const response = await api.get('/orders')
+        console.log('Полученные данные заказов:', response.data)
         setOrders(response.data)
         setFilteredOrders(response.data)
         setIsLoading(false)
@@ -74,6 +75,7 @@ const OrdersPage = () => {
     }
     
     setFilteredOrders(result)
+    console.log('Фильтрованные заказы:', filteredOrders)
   }, [searchTerm, filters, orders])
   
   const handleSearchChange = (e) => {
@@ -113,58 +115,109 @@ const OrdersPage = () => {
   }
   
   const columns = [
-    {
-      header: 'Номер',
-      accessor: 'number',
-      cell: (row) => (
-        <div className="font-medium text-primary-600">{row.number}</div>
-      )
-    },
+{
+  header: 'Номер',
+  accessor: 'number',
+  cell: (row) => {
+    if (!row.number || row.number === '') {
+      console.log('Номер отсутствует в заказе:', row);
+      return <div className="font-medium text-primary-600">Не указан</div>;
+    }
+    return <div className="font-medium text-primary-600">{row.number}</div>;
+  }
+},
     {
       header: 'Клиент',
       accessor: 'customer',
     },
-    {
-      header: 'Дата',
-      accessor: 'date',
-    },
-    {
-      header: 'Статус',
-      accessor: 'status',
-      cell: (row) => (
-        <div>
-          <Badge 
-            variant={getBadgeVariant(row.status)} 
-            rounded
-          >
-            {row.status}
-          </Badge>
-        </div>
-      )
-    },
+{
+  header: 'Дата',
+  accessor: 'date',
+  cell: (row) => {
+    if (!row.date) {
+      console.log('Дата отсутствует в заказе:', row);
+      return <div>Не указана</div>;
+    }
+    let date = new Date(row.date);
+    if (isNaN(date.getTime())) {
+      // Попытка преобразовать дату из формата 'DD.MM.YYYY' в ISO
+      const parts = row.date.split('.');
+      if (parts.length === 3) {
+        const isoDateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+        date = new Date(isoDateStr);
+        if (!isNaN(date.getTime())) {
+          return <div>{date.toLocaleDateString('ru-RU')}</div>;
+        }
+      }
+      console.log('Невалидная дата в заказе:', row.date, row);
+      return <div>Не указана</div>;
+    }
+    return <div>{date.toLocaleDateString('ru-RU')}</div>;
+  }
+},
+{
+  header: 'Статус',
+  accessor: 'status',
+  cell: (row) => {
+    const statusText = row.status && row.status !== '' ? row.status : 'Не указан';
+    return (
+      <div>
+        <Badge 
+          variant={getBadgeVariant(statusText)} 
+          rounded
+        >
+          {statusText}
+        </Badge>
+      </div>
+    )
+  }
+},
     {
       header: 'Товары',
       accessor: 'items',
-      cell: (row) => (
-        <div className="text-right">
-          {row.items} шт.
-        </div>
-      )
+      cell: (row) => {
+        // row.items is expected to be an array of objects with quantity
+        const totalQuantity = Array.isArray(row.items)
+          ? row.items.reduce((sum, item) => sum + (item.quantity || 0), 0)
+          : 0;
+        return (
+          <div className="text-right">
+            {totalQuantity} шт.
+          </div>
+        )
+      }
     },
     {
       header: 'Пункт выдачи',
       accessor: 'pickup',
     },
-    {
-      header: 'Сумма',
-      accessor: 'total',
-      cell: (row) => (
-        <div className="text-right font-medium">
-          {row.total.toLocaleString('ru-RU')} ₽
-        </div>
-      )
-    },
+{
+  header: 'Сумма',
+  accessor: 'total',
+  cell: (row) => {
+    if (row.total === undefined || row.total === null) {
+      console.log('Сумма отсутствует в заказе:', row);
+      return <div className="text-right font-medium">0 ₽</div>;
+    }
+    const total = Number(row.total);
+    if (isNaN(total)) {
+      console.log('Некорректная сумма в заказе:', row.total, row);
+      return <div className="text-right font-medium">0 ₽</div>;
+    }
+    return <div className="text-right font-medium">{total.toLocaleString('ru-RU')} ₽</div>;
+  }
+},
   ]
+  
+  const validOrders = filteredOrders.map(order => ({
+    ...order,
+    number: order.number || 'Не указан',
+    customer: order.customer || 'Не указан',
+    date: order.date || 'Не указана',
+    status: order.status || 'Не указан',
+  }));
+
+  console.log('Исключенные заказы:', filteredOrders.filter(order => !order.number || !order.customer || !order.date || !order.status));
   
   return (
     <div className="space-y-6">
@@ -307,7 +360,7 @@ const OrdersPage = () => {
           
           <Table
             columns={columns}
-            data={filteredOrders}
+            data={validOrders}
             onRowClick={handleRowClick}
             isLoading={isLoading}
             emptyMessage="Заказы не найдены. Измените параметры поиска или создайте новый заказ."

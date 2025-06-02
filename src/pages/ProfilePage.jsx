@@ -84,17 +84,18 @@ const ProfilePage = () => {
     return Object.keys(newErrors).length === 0
   }
   
+  const { updateUserProfile } = useAuth()
+
   const handleSaveProfile = async (e) => {
     e.preventDefault()
     
     if (!validateProfile()) return
     
     try {
-      // В реальном приложении здесь будет запрос к API
-      // await api.put('/users/profile', profileForm)
-      
-      toast.success('Профиль успешно обновлен')
-      setEditingProfile(false)
+      const success = await updateUserProfile(profileForm)
+      if (success) {
+        setEditingProfile(false)
+      }
     } catch (error) {
       console.error('Ошибка обновления профиля:', error)
       toast.error('Не удалось обновить профиль')

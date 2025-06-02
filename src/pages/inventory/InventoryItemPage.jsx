@@ -42,11 +42,9 @@ const InventoryItemPage = () => {
   
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     try {
-      // В реальном приложении здесь будет запрос к API
-      // await api.put(`/inventory/${id}`, formData)
-      
+      await api.put(`/inventory/${id}`, formData)
       setItem(formData)
       setIsEditing(false)
       toast.success('Информация о товаре обновлена')
@@ -333,7 +331,7 @@ const InventoryItemPage = () => {
                   <div>
                     <p className="text-sm text-neutral-500">Штрих-код</p>
                     <div className="flex items-center">
-                      <FiBarcode className="mr-2" />
+                      <FiTag className="mr-2" />
                       <p className="font-medium">{item.barcode}</p>
                     </div>
                   </div>

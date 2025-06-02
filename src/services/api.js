@@ -254,4 +254,9 @@ export default usingMockApi ? {
     request: { use: () => {} },
     response: { use: () => {} }
   }
-} : api
+} : {
+  ...api,
+  updateOrder(id, orderData) {
+    return api.put(`/orders/${id}`, orderData)
+  }
+}

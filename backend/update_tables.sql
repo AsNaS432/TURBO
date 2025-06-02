@@ -18,7 +18,8 @@ ALTER TABLE products
   ADD COLUMN IF NOT EXISTS status VARCHAR(50),
   ADD COLUMN IF NOT EXISTS description TEXT,
   ADD COLUMN IF NOT EXISTS supplier VARCHAR(255),
-  ADD COLUMN IF NOT EXISTS barcode VARCHAR(255);
+  ADD COLUMN IF NOT EXISTS barcode VARCHAR(255),
+  ADD COLUMN IF NOT EXISTS totalinventory INTEGER;
 
 -- Таблица categories
 ALTER TABLE categories
@@ -32,7 +33,10 @@ ALTER TABLE orders
   ADD COLUMN IF NOT EXISTS date TIMESTAMP,
   ADD COLUMN IF NOT EXISTS items INTEGER,
   ADD COLUMN IF NOT EXISTS total NUMERIC(10,2),
-  ADD COLUMN IF NOT EXISTS pickup VARCHAR(255);
+  ADD COLUMN IF NOT EXISTS pickup VARCHAR(255),
+  ADD COLUMN IF NOT EXISTS lowstockitems INTEGER,
+  ADD COLUMN IF NOT EXISTS pendingorders INTEGER,
+  ADD COLUMN IF NOT EXISTS completedorders INTEGER;
 
 -- Таблица order_items
 ALTER TABLE order_items
@@ -65,5 +69,21 @@ ALTER TABLE sales_report
 ALTER TABLE inventory_report
   ADD COLUMN IF NOT EXISTS category VARCHAR(100),
   ADD COLUMN IF NOT EXISTS count INTEGER;
+
+-- Создание недостающих таблиц
+-- Таблица categories
+CREATE TABLE IF NOT EXISTS categories (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL
+);
+
+-- Таблица order_history
+CREATE TABLE IF NOT EXISTS order_history (
+  id SERIAL PRIMARY KEY,
+  order_id INTEGER REFERENCES orders(id),
+  date TIMESTAMP,
+  status VARCHAR(50),
+  comment TEXT
+);
 
 -- Добавьте дополнительные изменения по необходимости

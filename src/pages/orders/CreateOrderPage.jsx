@@ -166,22 +166,27 @@ const CreateOrderPage = () => {
   
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!validate()) return
-    
+
     const orderData = {
-      ...formData,
+      customer: {
+        name: formData.customer.name,
+        email: formData.customer.email,
+        phone: formData.customer.phone,
+        address: formData.customer.address,
+      },
       items: selectedItems.map(item => ({
         id: item.id,
-        quantity: item.quantity
-      }))
+        quantity: item.quantity,
+      })),
+      pickup: formData.pickup,
+      comment: formData.comment,
     }
-    
+
     try {
-      // В реальном приложении здесь будет запрос к API
-      // const response = await api.post('/orders', orderData)
-      
-      toast.success('Заказ успешно создан')
+      const response = await api.post('/orders', orderData)
+      toast.success(`Заказ успешно создан: ${response.data.id}`)
       navigate('/orders')
     } catch (error) {
       console.error('Ошибка создания заказа:', error)
