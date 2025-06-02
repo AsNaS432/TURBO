@@ -1,3 +1,5 @@
+import ChatPopup from '../components/ui/ChatPopup'
+
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { FiPackage, FiShoppingCart, FiSearch, FiArrowRight, FiUser } from 'react-icons/fi'
@@ -199,6 +201,7 @@ const GuestPage = () => {
           </div>
         </div>
       </footer>
+      <ChatPopup />
     </div>
   )
 }

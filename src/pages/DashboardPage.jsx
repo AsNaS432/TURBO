@@ -137,6 +137,23 @@ const DashboardPage = () => {
           </div>
         </Card>
         
+        <Card className="bg-gradient-to-br from-error-500 to-error-600 text-white animate-fade-in delay-150">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-white text-opacity-80 font-medium">Заканчивающиеся товары</p>
+              <p className="text-3xl font-bold mt-2">{stats.lowStockItems}</p>
+            </div>
+            <div className="p-3 bg-white bg-opacity-20 rounded-lg">
+              <FiAlertCircle className="h-6 w-6" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <Link to="/inventory?filter=lowStock" className="text-sm text-white text-opacity-90 hover:text-opacity-100">
+              Пополнить запасы →
+            </Link>
+          </div>
+        </Card>
+        
         <Card className="bg-gradient-to-br from-accent-500 to-accent-600 text-white animate-fade-in delay-75">
           <div className="flex items-start justify-between">
             <div>
@@ -150,23 +167,6 @@ const DashboardPage = () => {
           <div className="mt-4">
             <Link to="/orders" className="text-sm text-white text-opacity-90 hover:text-opacity-100">
               Просмотреть заказы →
-            </Link>
-          </div>
-        </Card>
-        
-        <Card className="bg-gradient-to-br from-error-500 to-error-600 text-white animate-fade-in delay-150">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-white text-opacity-80 font-medium">Заканчиваются</p>
-              <p className="text-3xl font-bold mt-2">{stats.lowStockItems}</p>
-            </div>
-            <div className="p-3 bg-white bg-opacity-20 rounded-lg">
-              <FiAlertCircle className="h-6 w-6" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <Link to="/inventory?filter=lowStock" className="text-sm text-white text-opacity-90 hover:text-opacity-100">
-              Пополнить запасы →
             </Link>
           </div>
         </Card>
