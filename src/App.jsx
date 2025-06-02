@@ -10,6 +10,7 @@ import InventoryItemPage from './pages/inventory/InventoryItemPage'
 import AddInventoryItemPage from './pages/inventory/AddInventoryItemPage'
 import OrdersPage from './pages/orders/OrdersPage'
 import OrderDetailsPage from './pages/orders/OrderDetailsPage'
+import OrderEditPage from './pages/orders/OrderEditPage'
 import CreateOrderPage from './pages/orders/CreateOrderPage'
 import UsersPage from './pages/admin/UsersPage'
 import ReportsPage from './pages/reports/ReportsPage'
@@ -86,6 +87,7 @@ function App() {
         <Route path="orders" element={<OrdersPage />} />
         <Route path="orders/create" element={<CreateOrderPage />} />
         <Route path="orders/:id" element={<OrderDetailsPage />} />
+        <Route path="orders/:id/edit" element={<OrderEditPage />} />
         <Route path="reports" element={<ReportsPage />} />
         <Route path="profile" element={<ProfilePage />} />
         

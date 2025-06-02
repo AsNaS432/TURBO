@@ -312,13 +312,13 @@ app.get('/api/orders', authenticateToken, async (req, res) => {
 // Маршрут для обновления заказа
 app.put('/api/orders/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
-  const { customer, items, pickup, comment } = req.body;
+  const { customer, items, pickup, comment, status } = req.body;
 
   try {
-    // Обновляем основную информацию о заказе
+    // Обновляем основную информацию о заказе, включая статус
     await pool.query(
-      'UPDATE orders SET customer_name = $1, customer_email = $2, customer_phone = $3, customer_address = $4, pickup_point = $5, comment = $6 WHERE id = $7',
-      [customer.name, customer.email, customer.phone, customer.address, pickup, comment, id]
+      'UPDATE orders SET customer_name = $1, customer_email = $2, customer_phone = $3, customer_address = $4, pickup_point = $5, comment = $6, status = $7 WHERE id = $8',
+      [customer.name, customer.email, customer.phone, customer.address, pickup, comment, status, id]
     );
 
     // Удаляем старые позиции заказа
