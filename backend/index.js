@@ -146,11 +146,17 @@ app.get('/api/dashboard/stats', authenticateToken, async (req, res) => {
     const lowStockItems = lowStockResult.rows[0].lowstockitems || 0;
 
     // Получаем количество заказов в ожидании
-    const pendingOrdersResult = await pool.query('SELECT COUNT(*) AS pendingOrders FROM orders WHERE status = $1', ['pending']);
+    const pendingOrdersResult = await pool.query(
+      'SELECT COUNT(*) AS pendingOrders FROM orders WHERE LOWER(TRIM(status)) = LOWER(TRIM($1))',
+      ['В обработке']
+    );
     const pendingOrders = pendingOrdersResult.rows[0].pendingorders || 0;
 
     // Получаем количество завершенных заказов
-    const completedOrdersResult = await pool.query('SELECT COUNT(*) AS completedOrders FROM orders WHERE status = $1', ['completed']);
+    const completedOrdersResult = await pool.query(
+      'SELECT COUNT(*) AS completedOrders FROM orders WHERE LOWER(TRIM(status)) = LOWER(TRIM($1))',
+      ['Выполнен']
+    );
     const completedOrders = completedOrdersResult.rows[0].completedorders || 0;
 
     // Получаем последние активности (мок-данные)
