@@ -430,4 +430,26 @@ app.get('/api/orders/:id', async (req, res) => {
   }
 });
 
+// Маршрут для удаления заказа
+app.delete('/api/orders/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Удаляем позиции заказа
+    await pool.query('DELETE FROM order_items WHERE order_id = $1', [id]);
+
+    // Удаляем сам заказ
+    const result = await pool.query('DELETE FROM orders WHERE id = $1 RETURNING id', [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Заказ не найден' });
+    }
+
+    res.status(200).json({ message: 'Заказ успешно удален' });
+  } catch (err) {
+    console.error('Ошибка при удалении заказа:', err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
 export default app;

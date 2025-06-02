@@ -272,30 +272,7 @@ const DashboardPage = () => {
           className="lg:col-span-2 animate-fade-in"
         >
           <div className="space-y-3">
-            {stats.recentActivity.map((activity) => (
-              <div key={activity.id} className="flex items-start p-3 border-b border-neutral-100 last:border-0">
-                <div className={`p-2 rounded-full mr-3 
-                  ${activity.type === 'order' ? 'bg-primary-100 text-primary-600' : 
-                    activity.type === 'inventory' ? 'bg-accent-100 text-accent-600' : 
-                    'bg-secondary-100 text-secondary-600'}`
-                }>
-                  {activity.type === 'order' ? (
-                    <FiShoppingCart className="h-5 w-5" />
-                  ) : activity.type === 'inventory' ? (
-                    <FiPackage className="h-5 w-5" />
-                  ) : (
-                    <FiUsers className="h-5 w-5" />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <div className="flex justify-between">
-                    <p className="text-sm font-medium text-neutral-800">{activity.action}</p>
-                    <span className="text-xs text-neutral-500">{activity.time}</span>
-                  </div>
-                  <p className="text-sm text-neutral-600 mt-1">{activity.details}</p>
-                </div>
-              </div>
-            ))}
+            {/* Очистка списка последних активностей */}
           </div>
           
           <div className="mt-4 text-center">

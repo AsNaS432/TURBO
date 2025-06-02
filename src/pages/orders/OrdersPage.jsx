@@ -113,65 +113,81 @@ const OrdersPage = () => {
       default: return 'neutral'
     }
   }
+
+  const handleDeleteOrder = async (id) => {
+    if (!window.confirm('Вы уверены, что хотите удалить этот заказ?')) {
+      return
+    }
+    try {
+      await api.delete(`/orders/${id}`)
+      // Обновляем список заказов после удаления
+      const response = await api.get('/orders')
+      setOrders(response.data)
+      setFilteredOrders(response.data)
+    } catch (error) {
+      console.error('Ошибка при удалении заказа:', error)
+      alert('Не удалось удалить заказ. Попробуйте позже.')
+    }
+  }
   
   const columns = [
-{
-  header: 'Номер',
-  accessor: 'number',
-  cell: (row) => {
-    if (!row.number || row.number === '') {
-      console.log('Номер отсутствует в заказе:', row);
-      return <div className="font-medium text-primary-600">Не указан</div>;
-    }
-    return <div className="font-medium text-primary-600">{row.number}</div>;
-  }
-},
+    {
+      header: 'Номер',
+      accessor: 'number',
+      cell: (row) => {
+        if (!row.number || row.number === '') {
+          console.log('Номер отсутствует в заказе:', row);
+          return <div className="font-medium text-primary-600">Не указан</div>;
+        }
+        return <div className="font-medium text-primary-600">{row.number}</div>;
+      }
+    },
     {
       header: 'Клиент',
       accessor: 'customer',
     },
-{
-  header: 'Дата',
-  accessor: 'date',
-  cell: (row) => {
-    if (!row.date) {
-      console.log('Дата отсутствует в заказе:', row);
-      return <div>Не указана</div>;
-    }
-    let date = new Date(row.date);
-    if (isNaN(date.getTime())) {
-      // Попытка преобразовать дату из формата 'DD.MM.YYYY' в ISO
-      const parts = row.date.split('.');
-      if (parts.length === 3) {
-        const isoDateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
-        date = new Date(isoDateStr);
-        if (!isNaN(date.getTime())) {
-          return <div>{date.toLocaleDateString('ru-RU')}</div>;
+    {
+      header: 'Дата',
+      accessor: 'date',
+      cell: (row) => {
+        if (!row.date) {
+          console.log('Дата отсутствует в заказе:', row);
+          return <div>Не указана</div>;
         }
+        let date = new Date(row.date);
+        if (isNaN(date.getTime())) {
+          // Попытка преобразовать дату из формата 'DD.MM.YYYY' в ISO
+          const parts = row.date.split('.');
+          if (parts.length === 3) {
+            const isoDateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+            date = new Date(isoDateStr);
+            if (!isNaN(date.getTime())) {
+              return <div>{date.toLocaleDateString('ru-RU')}</div>;
+            }
+          }
+          console.log('Невалидная дата в заказе:', row.date, row);
+          return <div>Не указана</div>;
+        }
+        return <div>{date.toLocaleDateString('ru-RU')}</div>;
       }
-      console.log('Невалидная дата в заказе:', row.date, row);
-      return <div>Не указана</div>;
-    }
-    return <div>{date.toLocaleDateString('ru-RU')}</div>;
-  }
-},
-{
-  header: 'Статус',
-  accessor: 'status',
-  cell: (row) => {
-    const statusText = row.status && row.status !== '' ? row.status : 'Не указан';
-    return (
-      <div>
-        <Badge 
-          variant={getBadgeVariant(statusText)} 
-          rounded
-        >
-          {statusText}
-        </Badge>
-      </div>
-    )
-  }
-},
+    },
+    {
+      header: 'Статус',
+      accessor: 'status',
+      cell: (row) => {
+        const statusText = row.status && row.status !== '' ? row.status : 'Не указан';
+        return (
+          <div>
+            <Badge 
+              variant={getBadgeVariant(statusText)} 
+              rounded
+            >
+              {statusText}
+            </Badge>
+          </div>
+        )
+      }
+    },
     {
       header: 'Товары',
       accessor: 'items',
@@ -191,22 +207,38 @@ const OrdersPage = () => {
       header: 'Пункт выдачи',
       accessor: 'pickup',
     },
-{
-  header: 'Сумма',
-  accessor: 'total',
-  cell: (row) => {
-    if (row.total === undefined || row.total === null) {
-      console.log('Сумма отсутствует в заказе:', row);
-      return <div className="text-right font-medium">0 ₽</div>;
+    {
+      header: 'Сумма',
+      accessor: 'total',
+      cell: (row) => {
+        if (row.total === undefined || row.total === null) {
+          console.log('Сумма отсутствует в заказе:', row);
+          return <div className="text-right font-medium">0 ₽</div>;
+        }
+        const total = Number(row.total);
+        if (isNaN(total)) {
+          console.log('Некорректная сумма в заказе:', row.total, row);
+          return <div className="text-right font-medium">0 ₽</div>;
+        }
+        return <div className="text-right font-medium">{total.toLocaleString('ru-RU')} ₽</div>;
+      }
+    },
+    {
+      header: 'Действия',
+      accessor: 'actions',
+      cell: (row) => (
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            handleDeleteOrder(row.id)
+          }}
+          className="text-red-600 hover:text-red-800 font-medium"
+          title="Удалить заказ"
+        >
+          Удалить
+        </button>
+      )
     }
-    const total = Number(row.total);
-    if (isNaN(total)) {
-      console.log('Некорректная сумма в заказе:', row.total, row);
-      return <div className="text-right font-medium">0 ₽</div>;
-    }
-    return <div className="text-right font-medium">{total.toLocaleString('ru-RU')} ₽</div>;
-  }
-},
   ]
   
   const validOrders = filteredOrders.map(order => ({
