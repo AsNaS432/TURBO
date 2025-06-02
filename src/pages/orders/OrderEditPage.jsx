@@ -112,6 +112,7 @@ const OrderEditPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log('Submitting order update with status:', formData.status)
     try {
       await api.updateOrder(id, formData)
       setOrder(formData)
@@ -198,7 +199,19 @@ const OrderEditPage = () => {
                 variant="outline"
                 onClick={() => {
                   setIsEditing(false)
-                  setFormData(order)
+                  // Fix: properly reset formData from order object structure
+                  setFormData({
+                    customer: {
+                      name: order.customer.name || '',
+                      email: order.customer.email || '',
+                      phone: order.customer.phone || '',
+                      address: order.customer.address || '',
+                    },
+                    items: order.items || [],
+                    pickup: order.pickup || '',
+                    comment: order.comment || '',
+                    status: order.status || '',
+                  })
                 }}
               >
                 Отмена
@@ -351,18 +364,7 @@ const OrderEditPage = () => {
 
             <div>
               <h2 className="text-lg font-semibold mb-2">Статус заказа</h2>
-              <select
-                value={formData.status}
-                onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                required
-              >
-                <option value="">Выберите статус</option>
-                <option value="Выполнен">Выполнен</option>
-                <option value="В обработке">В обработке</option>
-                <option value="Отправлен">Отправлен</option>
-                <option value="Отменен">Отменен</option>
-              </select>
+              {/* Удалено: кнопки изменения статуса */}
             </div>
 
             <div>

@@ -52,9 +52,13 @@ const OrderDetailsPage = () => {
   
   const handleUpdateStatus = async (newStatus) => {
     try {
-      // В реальном приложении здесь будет запрос к API
-      // await api.put(`/orders/${id}/status`, { status: newStatus })
-      
+      await api.updateOrder(id, { 
+        customer: order.customer,
+        items: order.items,
+        pickup: order.pickup,
+        comment: order.comment,
+        status: newStatus
+      })
       setOrder({ ...order, status: newStatus })
       toast.success(`Статус заказа изменен на "${newStatus}"`)
     } catch (error) {

@@ -288,6 +288,7 @@ app.get('/api/orders', authenticateToken, async (req, res) => {
       '  o.customer_address, \n' +
       '  o.pickup_point AS pickup, \n' +
       '  o.comment, \n' +
+      '  o.status, \n' +  // Added status field here
       '  o.created_at AS date, \n' +
       '  COALESCE(SUM(p.price * oi.quantity), 0) AS total, \n' +
       '  JSON_AGG( \n' +

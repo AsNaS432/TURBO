@@ -244,7 +244,7 @@ const OrdersPage = () => {
   const validOrders = filteredOrders.map(order => ({
     ...order,
     number: order.number || 'Не указан',
-    customer: order.customer || 'Не указан',
+    customer: order.customer?.name || 'Не указан',
     date: order.date || 'Не указана',
     status: order.status || 'Не указан',
   }));

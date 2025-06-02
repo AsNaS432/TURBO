@@ -112,22 +112,27 @@ const CreateOrderPage = () => {
   }
   
   const handleItemQuantityChange = (id, newQuantity) => {
+    console.log('handleItemQuantityChange called with newQuantity:', newQuantity)
     const item = inventory.find(i => i.id === id)
     const maxQuantity = item ? item.quantity : 0
-    
-    // Проверяем, что новое количество не превышает доступное
-    if (newQuantity > maxQuantity) {
+
+    let quantityInt = parseInt(newQuantity)
+    console.log('Parsed quantityInt:', quantityInt)
+    if (isNaN(quantityInt)) {
+      quantityInt = 1
+    }
+
+    if (quantityInt > maxQuantity) {
       toast.warning(`Доступно только ${maxQuantity} единиц товара`)
-      newQuantity = maxQuantity
+      quantityInt = maxQuantity
     }
-    
-    // Проверяем, что новое количество положительное
-    if (newQuantity < 1) {
-      newQuantity = 1
+
+    if (quantityInt < 1) {
+      quantityInt = 1
     }
-    
-    setSelectedItems(selectedItems.map(item => 
-      item.id === id ? { ...item, quantity: parseInt(newQuantity) } : item
+
+    setSelectedItems(selectedItems.map(item =>
+      item.id === id ? { ...item, quantity: quantityInt } : item
     ))
   }
   
@@ -459,14 +464,48 @@ const CreateOrderPage = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex justify-center">
                             <div className="w-20">
-                              <input
-                                type="number"
-                                min="1"
-                                max={item.quantity}
-                                value={item.quantity}
-                                onChange={(e) => handleItemQuantityChange(item.id, e.target.value)}
-                                className="w-full px-2 py-1 text-center border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                              />
+                              <div className="flex items-center space-x-1">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const currentQuantity = item.quantity
+                                    const maxQuantity = inventory.find(i => i.id === item.id)?.quantity || 0
+                                    if (currentQuantity > 1) {
+                                      handleItemQuantityChange(item.id, currentQuantity - 1)
+                                    }
+                                  }}
+                                  className="px-2 py-1 bg-gray-200 rounded-md hover:bg-gray-300 select-none"
+                                  aria-label="Уменьшить количество"
+                                >
+                                  -
+                                </button>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max={item.quantity}
+                                  value={item.quantity}
+                                  onChange={(e) => handleItemQuantityChange(item.id, e.target.value)}
+                                  className="w-16 px-2 py-1 text-center border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                  style={{ MozAppearance: 'textfield' }}
+                                  // This style hides the default spinner in Firefox
+                                  onWheel={(e) => e.target.blur()} 
+                                  // Prevent mouse wheel from changing value
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const currentQuantity = item.quantity
+                                    const maxQuantity = inventory.find(i => i.id === item.id)?.quantity || 0
+                                    if (currentQuantity < maxQuantity) {
+                                      handleItemQuantityChange(item.id, currentQuantity + 1)
+                                    }
+                                  }}
+                                  className="px-2 py-1 bg-gray-200 rounded-md hover:bg-gray-300 select-none"
+                                  aria-label="Увеличить количество"
+                                >
+                                  +
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </td>
