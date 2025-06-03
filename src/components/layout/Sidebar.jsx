@@ -79,14 +79,15 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <FiShoppingCart className="w-5 h-5 mr-3" />
             <span>Заказы</span>
           </NavLink>
-          
-          <NavLink 
-            to="/reports" 
-            className={({ isActive }) => isActive ? activeLink : inactiveLink}
-          >
-            <FiBarChart2 className="w-5 h-5 mr-3" />
-            <span>Отчеты</span>
-          </NavLink>
+          {hasRole('admin') && (
+            <NavLink 
+              to="/reports" 
+              className={({ isActive }) => isActive ? activeLink : inactiveLink}
+            >
+              <FiBarChart2 className="w-5 h-5 mr-3" />
+              <span>Отчеты</span>
+            </NavLink>
+          )}
           
           {/* Раздел только для администраторов */}
           {hasRole('admin') && (

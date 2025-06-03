@@ -18,8 +18,8 @@ const Button = ({
     accent: 'bg-accent-500 text-white hover:bg-accent-600 focus:ring-accent-400',
     success: 'bg-success-600 text-white hover:bg-success-700 focus:ring-success-500',
     danger: 'bg-error-600 text-white hover:bg-error-700 focus:ring-error-500',
-    outline: 'border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50 focus:ring-neutral-500',
-    ghost: 'bg-transparent text-neutral-700 hover:bg-neutral-100 focus:ring-neutral-500',
+    outline: 'border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-50 focus:ring-neutral-500 dark:bg-neutral-800 dark:text-neutral-200 dark:border-neutral-600 dark:hover:bg-neutral-700',
+    ghost: 'bg-transparent text-neutral-700 hover:bg-neutral-100 focus:ring-neutral-500 dark:text-neutral-200 dark:hover:bg-neutral-800',
   }
   
   const sizeStyles = {

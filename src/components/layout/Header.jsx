@@ -8,6 +8,10 @@ const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate()
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const [darkMode, setDarkMode] = useState(() => {
+    // Проверяем localStorage при инициализации
+    return localStorage.getItem('theme') === 'dark';
+  });
   const dropdownRef = useRef(null)
   const notificationsRef = useRef(null)
   
@@ -36,9 +40,25 @@ const Header = ({ toggleSidebar }) => {
     }
   }, [])
   
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+  
   const handleLogout = () => {
     logout()
     navigate('/login')
+  }
+  
+  const handleToggleTheme = () => {
+    setDarkMode((prev) => {
+      const next = !prev;
+      localStorage.setItem('theme', next ? 'dark' : 'light');
+      return next;
+    });
   }
   
   return (
@@ -57,7 +77,7 @@ const Header = ({ toggleSidebar }) => {
           </h1>
         </div>
         
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-4">
           {/* Уведомления */}
           <div className="relative" ref={notificationsRef}>
             <button
@@ -89,6 +109,16 @@ const Header = ({ toggleSidebar }) => {
               </div>
             )}
           </div>
+          
+          {/* Переключатель темы */}
+          <button
+            onClick={handleToggleTheme}
+            className="rounded-full p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
+            title={darkMode ? 'Светлая тема' : 'Тёмная тема'}
+            style={{ fontSize: 20 }}
+          >
+            {darkMode ? '🌙' : '☀️'}
+          </button>
           
           {/* Профиль пользователя */}
           <div className="relative" ref={dropdownRef}>

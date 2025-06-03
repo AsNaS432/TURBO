@@ -57,9 +57,7 @@ const InventoryItemPage = () => {
   const handleDelete = async () => {
     if (window.confirm('Вы уверены, что хотите удалить этот товар?')) {
       try {
-        // В реальном приложении здесь будет запрос к API
-        // await api.delete(`/inventory/${id}`)
-        
+        await api.delete(`/inventory/${id}`)
         toast.success('Товар успешно удален')
         navigate('/inventory')
       } catch (error) {

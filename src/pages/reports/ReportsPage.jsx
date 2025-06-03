@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { FiBarChart2, FiDownload, FiFilter, FiPieChart, FiTrendingUp } from 'react-icons/fi'
 import {
   BarChart,
@@ -17,6 +17,7 @@ import {
 } from 'recharts'
 import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
+import api from '../../services/api'
 
 const ReportsPage = () => {
   const [dateRange, setDateRange] = useState({
@@ -24,6 +25,52 @@ const ReportsPage = () => {
     to: '2024-01-31'
   })
   const [reportType, setReportType] = useState('sales')
+  const [orderStatusData, setOrderStatusData] = useState([])
+  const [loadingStatus, setLoadingStatus] = useState(false)
+  const [topProducts, setTopProducts] = useState([])
+  const [loadingTopProducts, setLoadingTopProducts] = useState(false)
+  
+  useEffect(() => {
+    // Получаем актуальную статистику по статусам заказов
+    const fetchStatusStats = async () => {
+      setLoadingStatus(true)
+      try {
+        const res = await api.get('/dashboard/stats')
+        // Для реального API: res.data.ordersByStatus
+        setOrderStatusData(res.data.ordersByStatus || [])
+      } catch (e) {
+        setOrderStatusData([])
+      } finally {
+        setLoadingStatus(false)
+      }
+    }
+    fetchStatusStats()
+  }, [])
+  
+  useEffect(() => {
+    // Получаем топ-5 товаров по продажам
+    const fetchTopProducts = async () => {
+      setLoadingTopProducts(true)
+      try {
+        const res = await api.get('/dashboard/stats')
+        // Для реального API: res.data.topProducts
+        // Если API не возвращает topProducts, то считаем на клиенте из salesData/orders
+        if (res.data.topProducts) {
+          setTopProducts(res.data.topProducts)
+        } else if (res.data.salesByProduct) {
+          // salesByProduct: [{name, sales}]
+          setTopProducts(res.data.salesByProduct.slice(0, 5))
+        } else {
+          setTopProducts([])
+        }
+      } catch (e) {
+        setTopProducts([])
+      } finally {
+        setLoadingTopProducts(false)
+      }
+    }
+    fetchTopProducts()
+  }, [])
   
   const handleDateChange = (e) => {
     const { name, value } = e.target
@@ -85,14 +132,14 @@ const ReportsPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-neutral-800 flex items-center">
+        <h1 className="text-2xl font-bold text-neutral-800 dark:text-neutral-100 flex items-center">
           <FiBarChart2 className="mr-2" /> Отчеты и аналитика
         </h1>
       </div>
       
-      <Card>
+      <Card className="dark:bg-neutral-900 dark:border-neutral-700">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-          <h2 className="text-lg font-semibold">Параметры отчета</h2>
+          <h2 className="text-lg font-semibold dark:text-neutral-100">Параметры отчета</h2>
           
           <div className="flex gap-2">
             <Button
@@ -107,6 +154,7 @@ const ReportsPage = () => {
               variant="outline"
               icon={FiDownload}
               onClick={downloadReport}
+              className="dark:bg-neutral-800 dark:text-neutral-200 dark:border-neutral-600 dark:hover:bg-neutral-700"
             >
               Скачать
             </Button>
@@ -115,7 +163,7 @@ const ReportsPage = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">
               С даты
             </label>
             <input
@@ -123,12 +171,12 @@ const ReportsPage = () => {
               name="from"
               value={dateRange.from}
               onChange={handleDateChange}
-              className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-neutral-800 dark:text-neutral-100"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">
               По дату
             </label>
             <input
@@ -136,19 +184,19 @@ const ReportsPage = () => {
               name="to"
               value={dateRange.to}
               onChange={handleDateChange}
-              className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-neutral-800 dark:text-neutral-100"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-200 mb-1">
               Тип отчета
             </label>
             <select
               name="reportType"
               value={reportType}
               onChange={(e) => setReportType(e.target.value)}
-              className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-neutral-800 dark:text-neutral-100"
             >
               <option value="sales">Продажи</option>
               <option value="products">Товары</option>
@@ -205,58 +253,54 @@ const ReportsPage = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card title="Топ-5 товаров по продажам" icon={FiBarChart2}>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={[
-                      { name: 'Смартфон Samsung Galaxy A52', sales: 42 },
-                      { name: 'Наушники Sony WH-1000XM4', sales: 35 },
-                      { name: 'Умные часы Xiaomi Mi Band 6', sales: 28 },
-                      { name: 'Ноутбук ASUS VivoBook', sales: 22 },
-                      { name: 'Телевизор LG OLED C1', sales: 18 },
-                    ]}
-                    layout="vertical"
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" />
-                    <YAxis dataKey="name" type="category" width={150} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="sales" name="Продажи (шт)" fill="#2563eb" />
-                  </BarChart>
-                </ResponsiveContainer>
+              <div className="h-80 flex items-center justify-center">
+                {loadingTopProducts ? (
+                  <div className="text-neutral-500">Загрузка...</div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={topProducts}
+                      layout="vertical"
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis type="number" />
+                      <YAxis dataKey="name" type="category" width={150} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="sales" name="Продажи (шт)" fill="#2563eb" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </Card>
             
             <Card title="Статусы заказов" icon={FiPieChart}>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={[
-                        { name: 'Выполнен', value: 145 },
-                        { name: 'В обработке', value: 35 },
-                        { name: 'Отправлен', value: 55 },
-                        { name: 'Отменен', value: 12 },
-                        { name: 'Доставлен в ПВЗ', value: 18 },
-                      ]}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    >
-                      {productCategoryData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip formatter={(value) => [`${value} шт.`, 'Количество']} />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
+              <div className="h-80 flex items-center justify-center">
+                {loadingStatus ? (
+                  <div className="text-neutral-500">Загрузка...</div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={orderStatusData.map((s) => ({ name: s.status, value: s.count }))}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {orderStatusData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [`${value} шт.`, 'Количество']} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </Card>
           </div>

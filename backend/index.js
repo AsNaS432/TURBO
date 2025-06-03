@@ -459,4 +459,19 @@ app.delete('/api/orders/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// Маршрут для удаления товара
+app.delete('/api/inventory/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('DELETE FROM products WHERE id = $1 RETURNING id', [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Товар не найден' });
+    }
+    res.json({ id });
+  } catch (err) {
+    console.error('Ошибка при удалении товара:', err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
 export default app;
